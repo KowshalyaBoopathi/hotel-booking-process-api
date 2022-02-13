@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f8312fb8-e0a7-4ef7-bcb1-b3a13217edf6" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="b0cb12c8-7ea7-41dc-94a8-2a69dd42f8f2" >
+		<wsc:connection wsdlLocation="http://hotel-booking-system-api-lolnav.us-e2.cloudhub.io/Hotel/HotelSOAP?wsdl" service="Hotel" port="HotelSOAP" address="http://hotel-booking-system-api-lolnav.us-e2.cloudhub.io/Hotel/HotelSOAP" >
+			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
+		</wsc:connection>
+	</wsc:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="527eea79-2f17-4796-93b8-dc5438244b39" file="config.yaml" />
+</mule>

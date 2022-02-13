@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getHotels" doc:id="592bee8c-402e-4b1d-9a8e-4f38ddce6c3a" >
+		<ee:transform doc:name="Transform Message" doc:id="5f6a664b-4e26-4c9a-b88c-4e94b23e4b5f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#GetHotels: ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="6e40885e-3ccd-4f11-abf4-8601a5b849e5" config-ref="Web_Service_Consumer_Config" operation="GetHotels"/>
+		<ee:transform doc:name="Transform Message" doc:id="286954e4-bd6d-4421-acfa-95e4163bcc51" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyhotel.com/Hotel/
+
+output application/json
+---
+payload.body.result.*Hotels map((item, index)->{
+	"Hotel ID": item.hotelId,
+	"Hotel Name": item.hotelName,
+	"Number of Rooms": item.rooms,
+	"Address": item.address,
+	"Food": item.food,
+	"Amenities": item.amenities,
+	"Payment":item.paymentTypes,
+	Ratings: item.rating		
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="postHotel" doc:id="6033aed2-d9f2-4696-96ab-d56cab09760c" >
+		<ee:transform doc:name="Transform Message" doc:id="8b10fdc3-d844-481d-a6f5-3a5ee9e32d39" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#PostHotel: {
+		Hotel: {
+			HotelId: payload.hotelId as Number default "0",
+			HotelName: payload.hotelName,
+			rating: payload.rating,
+			address: payload.address,
+			rooms: payload.rooms,
+			paymentType: payload.paymentTypes,
+			amenities: payload.amenities,
+			food: payload.food
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="c73e041b-40b5-4669-8e1c-eb90a5b7754b" config-ref="Web_Service_Consumer_Config" operation="PostHotel"/>
+		<ee:transform doc:name="Transform Message" doc:id="1c070bad-b123-4769-8b99-a59d3ebd2924" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+payload.body.result[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getHotelById" doc:id="3d3dcd9b-49ac-43f3-a8e1-163634cb6ce8" >
+		<ee:transform doc:name="Transform Message" doc:id="cc48b86e-d789-4e53-a8e1-6603643c09b7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#GetHotelById: {
+		HotelId: attributes.uriParams.hotelId
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="6b5eab8b-1b4a-4234-a505-8ea43af2b34a" config-ref="Web_Service_Consumer_Config" operation="GetHotelById"/>
+		<ee:transform doc:name="Transform Message" doc:id="8d8e5143-8a69-40e3-829b-a279c7137b0c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyhotel.com/Hotel/
+output application/json
+---
+ {
+	"Hotel ID": payload.body.result.Hotels.hotelId,
+	"Hotel Name": payload.body.result.Hotels.hotelName,
+	"Number of Rooms": payload.body.result.Hotels.rooms,
+	"Address": payload.body.result.Hotels.address,
+	"Food": payload.body.result.Hotels.food,
+	"Amenities": payload.body.result.Hotels.amenities,
+	"Payment":payload.body.result.Hotels.paymentTypes,
+	Ratings: payload.body.result.Hotels.rating		
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="updateHotelById" doc:id="a940c2ce-1c70-4408-bce2-039f454becb7">
+		<ee:transform doc:name="Transform Message" doc:id="040f0fcd-af4b-487d-b6c0-2b29f4bfd7c6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#UpdateHotelById: {
+		PatchHotelBody: {
+			HotelId: attributes.uriParams.hotelId,
+			HotelName: payload.hotelName,
+			rating: payload.rating,
+			address: payload.address
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="9c27a861-2f0b-43a3-85a2-903f12469b4e" config-ref="Web_Service_Consumer_Config" operation="UpdateHotelById"/>
+		<ee:transform doc:name="Transform Message" doc:id="b4d5336c-249d-4d3e-9148-8352fb53f839">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+payload.body.result[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="deleteHotelById" doc:id="92dd7386-b4ce-48c0-9644-0ad08e9a6ab5" >
+		<ee:transform doc:name="Transform Message" doc:id="d2bd4377-1352-4f39-a001-2a7cf3ab6bda" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#DeleteHotelById: {
+		HotelId: attributes.uriParams.hotelId
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="153d9d61-34f4-4b9d-8c3e-8fecf91fb2f7" config-ref="Web_Service_Consumer_Config" operation="DeleteHotelById"/>
+		<ee:transform doc:name="Transform Message" doc:id="6ca64fe6-df4f-49f7-a044-c30995bba573" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+payload.body.result[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getBookings" doc:id="3d9d5bf9-bd2c-4e5a-9253-1cb84e831aef" >
+		<ee:transform doc:name="Transform Message" doc:id="60afd3d1-d082-44f4-8941-9deba8e0c485" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="9c86ef72-a90c-4a9b-8d50-7488909f9f11" config-ref="Web_Service_Consumer_Config" operation="GetBookings"/>
+		<ee:transform doc:name="Transform Message" doc:id="5297262a-0639-43ba-ae74-f0f9108816ce" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="postBooking" doc:id="aa02da1c-4423-498d-8fcc-e16b41d449ad" >
+		<wsc:consume doc:name="Consume" doc:id="819f05f2-285e-40fd-8c55-f9dc4da2576c" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+	<flow name="getBookingById" doc:id="687eef38-9259-4ae0-9325-bd6e7d8e0044" >
+		<wsc:consume doc:name="Consume" doc:id="7fc7b69a-6c2a-44db-a570-f6ed5a069f2f" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+	<flow name="updateBookingById" doc:id="f13bb421-9a68-4d62-9b7c-ecb6be8660b1" >
+		<wsc:consume doc:name="Consume" doc:id="8156918a-815b-42a6-b390-8d888828f0b2" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+	<flow name="deleteBookingById" doc:id="8787abb2-ad2b-4e26-9492-44365d8fbb5f" >
+		<wsc:consume doc:name="Consume" doc:id="3c17b036-3e86-405a-9162-aa1f7d8f6b8a" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+</mule>

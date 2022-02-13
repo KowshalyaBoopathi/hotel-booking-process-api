@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <http:listener-config name="bookmyhotelapi-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
     <apikit:config name="bookmyhotelapi-config" api="resource::a48df65f-4162-4f7b-b907-b5f038686e7a:bookmyhotel:1.0.7:raml:zip:bookmyhotelapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="bookmyhotelapi-main">
-        <http:listener config-ref="bookmyhotelapi-httpListenerConfig" path="/api/*">
+        <http:listener path="/api/*" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="bookmyhotelapi-config" />
@@ -97,13 +94,13 @@ output application/json
         </error-handler>
     </flow>
     <flow name="bookmyhotelapi-console">
-        <http:listener config-ref="bookmyhotelapi-httpListenerConfig" path="/console/*">
+        <http:listener path="/console/*" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="bookmyhotelapi-config" />
@@ -124,7 +121,8 @@ output application/json
         </error-handler>
     </flow>
     <flow name="delete:\booking\(bookingId):bookmyhotelapi-config">
-        <ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="bdae4a6d-d47e-4c75-9fb0-cfdf25dc7ffa" name="get:\hotels\(hotelId)\booking:bookmyhotelapi-config"/>
+		<ee:transform>
             <ee:variables>
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
@@ -143,23 +141,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="delete:\hotels\(hotelId):bookmyhotelapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="hotelId">attributes.uriParams.'hotelId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="40a32b28-cc3d-4841-a06c-394b53fe10df" name="deleteHotelById"/>
     </flow>
     <flow name="patch:\booking\(bookingId):application\json:bookmyhotelapi-config">
         <ee:transform>
@@ -181,42 +163,18 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="patch:\hotels\(hotelId):application\json:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="hotelId">attributes.uriParams.'hotelId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="208f816a-8338-4aaa-9dad-c154e92c8c00" name="updateHotelById"/>
     </flow>
-    <flow name="get:\hotels\(hotelId)\booking:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="hotelId">attributes.uriParams.'hotelId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
+    <flow name="get:\hotels\(hotelId)\booking:bookmyhotelapi-config" doc:id="5d49f837-baad-445d-a283-f483894b0caf">
+		<ee:transform doc:name="Transform Message" doc:id="63d41b4a-9658-4afa-a7c3-87197832b512" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
 ---
 {
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+			</ee:message>
+		</ee:transform>
     </flow>
     <flow name="get:\booking\(bookingId):bookmyhotelapi-config">
         <ee:transform>
@@ -255,43 +213,10 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\hotels\(hotelId):bookmyhotelapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="hotelId">attributes.uriParams.'hotelId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  hotelId: 1,
-  hotelName: "Taj Hotel",
-  rating: "5 star",
-  address: "Salem",
-  rooms: "singleroom",
-  paymentTypes: "cash",
-  amenities: "wifi",
-  transport: "towncar service",
-  food: "veg"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="744a0405-5d61-445d-9008-bf7e8a6c6d57" name="getHotelById"/>
     </flow>
     <flow name="get:\hotels:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="489ebf13-0371-4fd9-a65b-e0b58c71a5de" name="getHotels"/>
     </flow>
     <flow name="post:\booking:application\json:bookmyhotelapi-config">
         <ee:transform>
@@ -308,17 +233,6 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\hotels:application\json:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="a2f5c1c9-8247-4d9b-8fd6-180b9626e75b" name="postHotel"/>
     </flow>
 </mule>

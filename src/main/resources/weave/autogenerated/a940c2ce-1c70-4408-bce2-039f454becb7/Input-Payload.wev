@@ -1,0 +1,16 @@
+%dw 2.0
+
+type auto_a940c2ce_1c70_4408_bce2_039f454becb7_Input_Payload = {
+  amenities: String, 
+  rooms: String, 
+  address: String, 
+  rating: String, 
+  hotelId: Number, 
+  paymentTypes: String, 
+  transport: String, 
+  hotelName: String, 
+  food: String, 
+  _?: Any
+} {"description": "Hotel Details",
+"label": "Hotel DataType"}
+

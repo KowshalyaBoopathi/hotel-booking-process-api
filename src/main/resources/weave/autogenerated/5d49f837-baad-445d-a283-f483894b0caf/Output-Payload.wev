@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_5d49f837_baad_445d_a283_f483894b0caf_Output_Payload = Array<{  bookingStartDate: String,   amenitiesSelected: String,   bookingEndDate: String,   bookingId: String,   food: String,   room: String,   _?: Any}>
+

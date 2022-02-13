@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_3d3dcd9b_49ac_43f3_a8e1_163634cb6ce8_Output_Payload = {|
+  "Hotel ID": Null, 
+  "Hotel Name": Null, 
+  "Number of Rooms": Null, 
+  Address: Null, 
+  Food: Null, 
+  Amenities: Null, 
+  Payment: Null, 
+  Ratings: Null
+|}
+
