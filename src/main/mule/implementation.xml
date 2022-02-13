@@ -282,7 +282,7 @@ output application/json
 	Ratings: payload.body.result.Hotels.rating	
 	},
 	"Booking ID": vars.mod."Booking ID",
-	"Start Date": vars.mod."Start Date",
+	"Start Date": vars.mod."Start date",
 	"End Date": vars.mod."End Date",
 	"Amenities": vars.mod.Amenities,
 	"Food": vars.mod.Food,
