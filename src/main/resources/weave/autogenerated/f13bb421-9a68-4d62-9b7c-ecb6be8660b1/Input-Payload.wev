@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_f13bb421_9a68_4d62_9b7c_ecb6be8660b1_Input_Payload = {
+  bookingStartDate: String, 
+  amenitiesSelected: String, 
+  bookingEndDate: String, 
+  bookingId: String, 
+  food: String, 
+  room: String, 
+  _?: Any
+}
+

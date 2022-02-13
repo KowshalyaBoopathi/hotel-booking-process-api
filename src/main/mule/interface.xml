@@ -121,46 +121,13 @@ output application/json
         </error-handler>
     </flow>
     <flow name="delete:\booking\(bookingId):bookmyhotelapi-config">
-        <flow-ref doc:name="Flow Reference" doc:id="bdae4a6d-d47e-4c75-9fb0-cfdf25dc7ffa" name="get:\hotels\(hotelId)\booking:bookmyhotelapi-config"/>
-		<ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="bdae4a6d-d47e-4c75-9fb0-cfdf25dc7ffa" name="deleteBookingById"/>
     </flow>
     <flow name="delete:\hotels\(hotelId):bookmyhotelapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="40a32b28-cc3d-4841-a06c-394b53fe10df" name="deleteHotelById"/>
     </flow>
     <flow name="patch:\booking\(bookingId):application\json:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="844e70e2-a412-4fb4-a215-4fb72cba63e0" name="updateBookingById"/>
     </flow>
     <flow name="patch:\hotels\(hotelId):application\json:bookmyhotelapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="208f816a-8338-4aaa-9dad-c154e92c8c00" name="updateHotelById"/>
@@ -177,40 +144,10 @@ output application/java
 		</ee:transform>
     </flow>
     <flow name="get:\booking\(bookingId):bookmyhotelapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  bookingId: "b1",
-  bookingStartDate: "2020-09-10",
-  bookingEndDate: "2020-09-15",
-  amenitiesSelected: "room-service",
-  food: "veg",
-  room: "singleroom"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="ee6509d6-e494-4c9e-956e-14ecc6ecd231" name="getBookingById"/>
     </flow>
     <flow name="get:\booking:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="96894822-bd67-4f6e-8284-993a0162dcb1" name="getBookings"/>
     </flow>
     <flow name="get:\hotels\(hotelId):bookmyhotelapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="744a0405-5d61-445d-9008-bf7e8a6c6d57" name="getHotelById"/>
@@ -219,18 +156,7 @@ output application/json
         <flow-ref doc:name="Flow Reference" doc:id="489ebf13-0371-4fd9-a65b-e0b58c71a5de" name="getHotels"/>
     </flow>
     <flow name="post:\booking:application\json:bookmyhotelapi-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 404,
-  reasonPhrase: "Not Found",
-  details: "The requested resource is not found"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="b483add1-437a-4394-b588-10bf04461aa4" name="postBooking"/>
     </flow>
     <flow name="post:\hotels:application\json:bookmyhotelapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="a2f5c1c9-8247-4d9b-8fd6-180b9626e75b" name="postHotel"/>

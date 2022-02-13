@@ -165,14 +165,46 @@ payload.body.result[0]]]></ee:set-payload>
 		<ee:transform doc:name="Transform Message" doc:id="60afd3d1-d082-44f4-8941-9deba8e0c485" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#GetBookings: null
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="9c86ef72-a90c-4a9b-8d50-7488909f9f11" config-ref="Web_Service_Consumer_Config" operation="GetBookings"/>
+		<ee:transform doc:name="Transform Message" doc:id="5297262a-0639-43ba-ae74-f0f9108816ce" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyhotel.com/Hotel/
+
+output application/json
+---
+payload.body.result.*Bookings map((item, index)->{
+	"Hotel ID": item.hotelId,
+	"Booking ID": item.bookingID,
+	"Start date": item.bookingStartDate,
+	"End Date": item.bookingEndDate,
+	"Amenities": item.amenitiesSelected,
+	"Food": item.food,
+	"Room": item.room
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="postBooking" doc:id="aa02da1c-4423-498d-8fcc-e16b41d449ad" >
+		<ee:transform doc:name="Transform Message" doc:id="b0e18085-a258-4911-8bb5-9fe1b43b515a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
 {
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<wsc:consume doc:name="Consume" doc:id="9c86ef72-a90c-4a9b-8d50-7488909f9f11" config-ref="Web_Service_Consumer_Config" operation="GetBookings"/>
-		<ee:transform doc:name="Transform Message" doc:id="5297262a-0639-43ba-ae74-f0f9108816ce" >
+		<wsc:consume doc:name="Consume" doc:id="819f05f2-285e-40fd-8c55-f9dc4da2576c" config-ref="Web_Service_Consumer_Config" operation="PostBooking"/>
+		<ee:transform doc:name="Transform Message" doc:id="f7c751cc-94b6-4cc8-9f7a-65e190cb57fa" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
@@ -182,16 +214,137 @@ output application/java
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="postBooking" doc:id="aa02da1c-4423-498d-8fcc-e16b41d449ad" >
-		<wsc:consume doc:name="Consume" doc:id="819f05f2-285e-40fd-8c55-f9dc4da2576c" config-ref="Web_Service_Consumer_Config"/>
-	</flow>
 	<flow name="getBookingById" doc:id="687eef38-9259-4ae0-9325-bd6e7d8e0044" >
-		<wsc:consume doc:name="Consume" doc:id="7fc7b69a-6c2a-44db-a570-f6ed5a069f2f" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="9f210dc0-8044-4afa-9475-ba086906ef52" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#GetBookingById: {
+		bookingId: attributes.uriParams.bookingId		
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="7fc7b69a-6c2a-44db-a570-f6ed5a069f2f" config-ref="Web_Service_Consumer_Config" operation="GetBookingById"/>
+		<ee:transform doc:name="Transform Message" doc:id="83680811-f6a0-4f25-ac8f-74141075befb" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="mod" ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyhotel.com/Hotel/
+
+output application/json
+---
+{
+	"Hotel ID": payload.body.result.Bookings.hotelId,
+	"Booking ID": payload.body.result.Bookings.bookingID,
+	"Start date": payload.body.result.Bookings.bookingStartDate,
+	"End Date": payload.body.result.Bookings.bookingEndDate,
+	"Amenities": payload.body.result.Bookings.amenitiesSelected,
+	"Food": payload.body.result.Bookings.food,
+	"Room": payload.body.result.Bookings.room
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="d876e470-0ca1-4ed0-bc07-d69c5f1d69e6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#GetHotelById: {
+		HotelId: vars.mod."Hotel ID"
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="GetHotelById" doc:name="Consume" doc:id="84bff1d3-fd4b-46fa-a46a-45a2eab0a547" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="07719e94-f7bd-47c7-b832-0b8da043ad6c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://www.bookmyhotel.com/Hotel/
+output application/json
+---
+ {
+	"Hotel Details":
+	{	
+	"Hotel ID": payload.body.result.Hotels.hotelId,
+	"Hotel Name": payload.body.result.Hotels.hotelName,
+	"Number of Rooms": payload.body.result.Hotels.rooms,
+	"Address": payload.body.result.Hotels.address,
+	"Food": payload.body.result.Hotels.food,
+	"Amenities": payload.body.result.Hotels.amenities,
+	"Payment":payload.body.result.Hotels.paymentTypes,
+	Ratings: payload.body.result.Hotels.rating	
+	},
+	"Booking ID": vars.mod."Booking ID",
+	"Start Date": vars.mod."Start Date",
+	"End Date": vars.mod."End Date",
+	"Amenities": vars.mod.Amenities,
+	"Food": vars.mod.Food,
+	"Room": vars.mod.Room	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="updateBookingById" doc:id="f13bb421-9a68-4d62-9b7c-ecb6be8660b1" >
-		<wsc:consume doc:name="Consume" doc:id="8156918a-815b-42a6-b390-8d888828f0b2" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="573d6971-4934-4508-afea-e747916abc80" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#UpdateBookingById: {
+		bookingPatch: {
+			bookingId: payload.bookingId,
+			startDate: payload.bookingStartDate,
+			endDate: payload.bookingEndDate,
+			food: payload.food,
+			room: payload.room
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="8156918a-815b-42a6-b390-8d888828f0b2" config-ref="Web_Service_Consumer_Config" operation="UpdateBookingById"/>
+		<ee:transform doc:name="Transform Message" doc:id="abf6c16d-d217-4035-b29b-867e7bcf7cf2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+payload.body.result[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="deleteBookingById" doc:id="8787abb2-ad2b-4e26-9492-44365d8fbb5f" >
-		<wsc:consume doc:name="Consume" doc:id="3c17b036-3e86-405a-9162-aa1f7d8f6b8a" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="f868ca9b-7d36-4267-b384-66fd3a56f47c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+{
+	ns0#GetBookingById: {
+		bookingId: attributes.uriParams.bookingId		
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="3c17b036-3e86-405a-9162-aa1f7d8f6b8a" config-ref="Web_Service_Consumer_Config" operation="DeleteBookingById"/>
+		<ee:transform doc:name="Transform Message" doc:id="2fe3eda1-6403-44e5-8bbb-66d509923e06" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.bookmyhotel.com/Hotel/
+---
+payload.body.result[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>
