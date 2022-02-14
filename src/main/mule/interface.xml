@@ -132,17 +132,6 @@ output application/json
     <flow name="patch:\hotels\(hotelId):application\json:bookmyhotelapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="208f816a-8338-4aaa-9dad-c154e92c8c00" name="updateHotelById" />
     </flow>
-    <flow name="get:\hotels\(hotelId)\booking:bookmyhotelapi-config" doc:id="5d49f837-baad-445d-a283-f483894b0caf">
-        <ee:transform doc:name="Transform Message" doc:id="63d41b4a-9658-4afa-a7c3-87197832b512">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-{
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
     <flow name="get:\booking\(bookingId):bookmyhotelapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="ee6509d6-e494-4c9e-956e-14ecc6ecd231" name="getBookingById" />
     </flow>
