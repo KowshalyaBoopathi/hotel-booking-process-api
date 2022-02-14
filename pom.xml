@@ -50,13 +50,6 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>a48df65f-4162-4f7b-b907-b5f038686e7a</groupId>
-			<artifactId>bookmyhotel</artifactId>
-			<version>1.0.7</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.5.8</version>
@@ -67,6 +60,13 @@
 			<artifactId>mule-wsc-connector</artifactId>
 			<version>1.6.8</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>a48df65f-4162-4f7b-b907-b5f038686e7a</groupId>
+			<artifactId>bookmyhotel</artifactId>
+			<version>1.0.8</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 

@@ -1089,4 +1089,13 @@ type: string]]></types:shape>
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#f868ca9b-7d36-4267-b384-66fd3a56f47c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="str"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>

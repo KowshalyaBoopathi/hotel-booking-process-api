@@ -197,9 +197,22 @@ payload.body.result.*Bookings map((item, index)->{
 		<ee:transform doc:name="Transform Message" doc:id="b0e18085-a258-4911-8bb5-9fe1b43b515a" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/xml
+ns ns0 http://www.bookmyhotel.com/Hotel/
 ---
 {
+	ns0#PostBooking: {
+		booking: {
+			bookingId: payload.bookingId as Number,
+			startDate: payload.bookingStartDate as Date,
+			endDate: payload.bookingEndDate as Date,
+			amenities: payload.amenitiesSelected,
+			food: payload.food,
+			room: payload.room,
+			location: payload.location,
+			hotelName:payload.hotelName
+		}
+	}
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -207,10 +220,10 @@ output application/java
 		<ee:transform doc:name="Transform Message" doc:id="f7c751cc-94b6-4cc8-9f7a-65e190cb57fa" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
+ns ns0 http://www.bookmyhotel.com/Hotel/
 ---
-{
-}]]></ee:set-payload>
+payload.body.result[0]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
@@ -301,9 +314,9 @@ ns ns0 http://www.bookmyhotel.com/Hotel/
 {
 	ns0#UpdateBookingById: {
 		bookingPatch: {
-			bookingId: payload.bookingId,
-			startDate: payload.bookingStartDate,
-			endDate: payload.bookingEndDate,
+			bookingId: attributes.uriParams.bookingId,
+			startDate: payload.bookingStartDate as Date,
+			endDate: payload.bookingEndDate as Date,
 			food: payload.food,
 			room: payload.room
 		}
@@ -312,15 +325,6 @@ ns ns0 http://www.bookmyhotel.com/Hotel/
 			</ee:message>
 		</ee:transform>
 		<wsc:consume doc:name="Consume" doc:id="8156918a-815b-42a6-b390-8d888828f0b2" config-ref="Web_Service_Consumer_Config" operation="UpdateBookingById"/>
-		<ee:transform doc:name="Transform Message" doc:id="abf6c16d-d217-4035-b29b-867e7bcf7cf2" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-ns ns0 http://www.bookmyhotel.com/Hotel/
----
-payload.body.result[0]]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
 	</flow>
 	<flow name="deleteBookingById" doc:id="8787abb2-ad2b-4e26-9492-44365d8fbb5f" >
 		<ee:transform doc:name="Transform Message" doc:id="f868ca9b-7d36-4267-b384-66fd3a56f47c" >
@@ -330,8 +334,8 @@ output application/xml
 ns ns0 http://www.bookmyhotel.com/Hotel/
 ---
 {
-	ns0#GetBookingById: {
-		bookingId: attributes.uriParams.bookingId		
+	ns0#DeleteBookingById: {
+		bookingId: attributes.uriParams.bookingId
 	}
 }]]></ee:set-payload>
 			</ee:message>
