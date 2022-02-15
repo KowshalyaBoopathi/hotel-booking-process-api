@@ -262,9 +262,23 @@ output application/json
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="d876e470-0ca1-4ed0-bc07-d69c5f1d69e6" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<choice doc:name="Choice" doc:id="83c90afb-59d5-49a6-a8f2-7e32c8a66d48" >
+			<when expression='#[vars.mod."Booking ID" == null]'>
+				<ee:transform doc:name="Transform Message" doc:id="87e32e5e-0d74-4b24-b0de-ed04f0df1af9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Message: "There are no details available for this Booking ID."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="d876e470-0ca1-4ed0-bc07-d69c5f1d69e6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
 ns ns0 http://www.bookmyhotel.com/Hotel/
 ---
@@ -275,10 +289,10 @@ ns ns0 http://www.bookmyhotel.com/Hotel/
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<wsc:consume operation="GetHotelById" doc:name="Consume" doc:id="84bff1d3-fd4b-46fa-a46a-45a2eab0a547" config-ref="Web_Service_Consumer_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="07719e94-f7bd-47c7-b832-0b8da043ad6c" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+				<wsc:consume operation="GetHotelById" doc:name="Consume" doc:id="84bff1d3-fd4b-46fa-a46a-45a2eab0a547" config-ref="Web_Service_Consumer_Config" />
+				<ee:transform doc:name="Transform Message" doc:id="07719e94-f7bd-47c7-b832-0b8da043ad6c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 ns ns0 http://www.bookmyhotel.com/Hotel/
 output application/json
 ---
@@ -303,6 +317,8 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</otherwise>
+		</choice>
 	</flow>
 	<flow name="updateBookingById" doc:id="f13bb421-9a68-4d62-9b7c-ecb6be8660b1" >
 		<ee:transform doc:name="Transform Message" doc:id="573d6971-4934-4508-afea-e747916abc80" >
